@@ -314,6 +314,102 @@ def process_all():
         crop_beam = out_beam.crop(out_beam.getbbox())
         crop_beam.save(os.path.join(vfx_dir, 'light_beam.png'))
 
+    # 8. VFX - Magic Aura & Sparks (Slice 3x3 into 9 items)
+    aura_sheet_file = os.path.join(PUB_VFX, 'magic_aura.png')
+    if os.path.exists(aura_sheet_file):
+        import shutil
+        aura_im = Image.open(aura_sheet_file)
+        aw, ah = aura_im.size
+        cw, ch = aw // 3, ah // 3
+        for r in range(3):
+            for c in range(3):
+                idx = r * 3 + c
+                x0, y0 = c * cw, r * ch
+                x1 = (c + 1) * cw if c < 2 else aw
+                y1 = (r + 1) * ch if r < 2 else ah
+                crop = aura_im.crop((x0, y0, x1, y1)).copy()
+                item_w, item_h = crop.size
+                cp = crop.load()
+                for y in range(item_h):
+                    for x in range(item_w):
+                        red, g, b, a = cp[x, y]
+                        bright = (red + g + b) / 3.0
+                        diff = max(abs(red - g), abs(red - b), abs(g - b))
+                        if diff <= 10 and bright <= 48:
+                            cp[x, y] = (0, 0, 0, 0)
+                        elif diff <= 14 and bright <= 58:
+                            fade = max(0.0, (bright - 48) / 10.0)
+                            cp[x, y] = (red, g, b, int(a * fade))
+                        if (x == 0 or x == item_w - 1 or y == 0 or y == item_h - 1) and diff < 25:
+                            cp[x, y] = (0, 0, 0, 0)
+                crop.save(os.path.join(PUB_VFX, f'magic_aura_{idx}.png'))
+                crop.save(os.path.join(PUB_VFX, f'aura_{idx}.png'))
+
+    # 9. VFX - Golden Sparkles, Fire Sparks & Floating Dust (Slice 3x3 into 9 items)
+    particle_file = os.path.join(SRC_DIR, 'lucid-origin_game_particle_effect_asset_sheet_golden_sparkles_fire_sparks_floating_golden_dus-0 (1).jpg')
+    if os.path.exists(particle_file):
+        from PIL import ImageFilter
+        p_im = Image.open(particle_file)
+        pw, ph = p_im.size
+        p_pixels = p_im.load()
+        p_alpha = Image.new('L', (pw, ph), 0)
+        p_ap = p_alpha.load()
+
+        for y in range(ph):
+            for x in range(pw):
+                r, g, b = p_pixels[x, y]
+                bright = (r + g + b) / 3.0
+                gold = r - b
+                diff = max(abs(r - g), abs(r - b), abs(g - b))
+                if diff <= 8 and bright <= 76:
+                    p_ap[x, y] = 0
+                    continue
+                if bright > 175 and r > 175 and g > 140:
+                    p_ap[x, y] = 255
+                elif gold > 16 and r > 80:
+                    t = min(1.0, max(0.0, (gold - 16) / 50.0))
+                    a = t * t * (3 - 2 * t)
+                    if bright > 100: a = min(1.0, a * 1.35)
+                    p_ap[x, y] = int(a * 255)
+                elif r > 115 and g > 85 and gold > 12:
+                    p_ap[x, y] = min(255, int((r - 75) * 2.6))
+                else:
+                    p_ap[x, y] = 0
+
+        p_smooth = p_alpha.filter(ImageFilter.GaussianBlur(radius=0.9))
+        p_asp = p_smooth.load()
+        full_particles = Image.new('RGBA', (pw, ph), (0, 0, 0, 0))
+        p_fcp = full_particles.load()
+
+        for y in range(ph):
+            for x in range(pw):
+                a = p_asp[x, y]
+                if a > 4:
+                    r, g, b = p_pixels[x, y]
+                    gr = min(255, int(r * 1.18))
+                    gg = min(255, int(g * 1.08))
+                    gb = max(0, int(b * 0.45))
+                    p_fcp[x, y] = (gr, gg, gb, a)
+
+        full_particles.save(os.path.join(PUB_VFX, 'particles_sheet.png'))
+        pcw, pch = pw // 3, ph // 3
+        for r in range(3):
+            for c in range(3):
+                idx = r * 3 + c
+                x0 = c * pcw
+                y0 = r * pch
+                x1 = (c + 1) * pcw if c < 2 else pw
+                y1 = (r + 1) * pch if r < 2 else ph
+                p_crop = full_particles.crop((x0, y0, x1, y1)).copy()
+                item_w, item_h = p_crop.size
+                cp = p_crop.load()
+                for py in range(item_h):
+                    for px in range(item_w):
+                        if (px <= 1 or px >= item_w - 2 or py <= 1 or py >= item_h - 2) and cp[px, py][3] < 160:
+                            cp[px, py] = (0, 0, 0, 0)
+                p_crop.save(os.path.join(PUB_VFX, f'spark_{idx}.png'))
+                p_crop.save(os.path.join(PUB_VFX, f'particle_{idx}.png'))
+
     # Sync all files to client/src/assets/
     os.system('cp -r /Applications/XAMPP/xamppfiles/htdocs/Solana-Slot-Game/client/public/assets/* /Applications/XAMPP/xamppfiles/htdocs/Solana-Slot-Game/client/src/assets/')
     print('All assets processed and synced perfectly!')
