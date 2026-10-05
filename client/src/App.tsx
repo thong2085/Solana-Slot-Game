@@ -10,10 +10,13 @@ import {
 import { soundEngine } from './core/audio-engine';
 import { ReelGrid } from './components/reel-grid/ReelGrid';
 import { PaylineOverlay } from './components/paylines/PaylineOverlay';
+import { PaylineMarkers } from './components/paylines/PaylineMarkers';
 import { Controls } from './components/controls/Controls';
 import { BigWinModal } from './components/modals/BigWinModal';
 import { PaytableModal } from './components/modals/PaytableModal';
 import { FreeSpinsModal } from './components/modals/FreeSpinsModal';
+import { IntroScreen } from './components/intro/IntroScreen';
+import { TombAmbientVFX } from './components/vfx/TombAmbientVFX';
 import { checkIfWalletConnected, connectWallet, getBalance } from './core/wallet';
 import './App.scss';
 
@@ -47,6 +50,7 @@ export const App: React.FC = () => {
   const [expandingSymbol, setExpandingSymbol] = useState<SymbolId | undefined>();
   const [expandedCols, setExpandedCols] = useState<number[]>([]);
   const [hasAnticipation, setHasAnticipation] = useState(false);
+  const [hoveredPaylineId, setHoveredPaylineId] = useState<number | null>(null);
 
   // Modals & UI States
   const [isBigWinModalOpen, setIsBigWinModalOpen] = useState(false);
@@ -59,6 +63,16 @@ export const App: React.FC = () => {
   const [isAutoSpin, setIsAutoSpin] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [walletAddress, setWalletAddress] = useState<string>('');
+  const [hasEnteredGame, setHasEnteredGame] = useState(false);
+
+  const handleStartDemo = () => {
+    setHasEnteredGame(true);
+  };
+
+  const handleStartWallet = async () => {
+    setHasEnteredGame(true);
+    await handleConnectWallet();
+  };
 
   // Refs for timers & auto-spin loop
   const autoSpinRef = useRef(isAutoSpin);
@@ -276,19 +290,59 @@ export const App: React.FC = () => {
 
   return (
     <div className="slot-game-app">
-      {/* Background Ambience Torches & Pillars */}
+      {/* Background Ambience: Depth-of-Field Blur, Darkening Vignette & Torches */}
+      <div className="tomb-depth-of-field" />
+      <div className="tomb-vignette-overlay" />
       <div className="tomb-background-ambient" />
+
+      {/* Dynamic Tomb Ambient VFX: Sunbeam, Flaming Torches, Embers & Coins */}
+      <TombAmbientVFX
+        isSpinning={isSpinning}
+        isWinning={winningLines.length > 0}
+        lastWin={lastWin}
+        isFreeSpins={isFreeSpins}
+      />
 
       {/* Main Machine Container */}
       <main className="slot-machine-viewport">
-        {/* Machine Header Logo */}
+        {/* Royal Winged Sun Disk of Ra & Header Logo */}
         <header className="game-header-brand">
+          <button
+            className="intro-return-pill-btn"
+            onClick={() => {
+              soundEngine.playClick();
+              setHasEnteredGame(false);
+            }}
+            title="Quay lại trang giới thiệu"
+          >
+            🏛️ Giới Thiệu
+          </button>
+          <div className="royal-ra-crest">
+            <div className="crest-wing left-wing" />
+            <div className="crest-sun-disc">
+              <img
+                src="/assets/symbols/wild.png"
+                alt="Sun Disk of Ra"
+                className="sun-disc-symbol"
+              />
+              <div className="sun-disc-aura" />
+            </div>
+            <div className="crest-wing right-wing" />
+          </div>
           <h1 className="game-main-title">LOST RELICS OF RA</h1>
-          <p className="game-sub-banner">ANCIENT EGYPTIAN 5×3 ADVENTURE • 20 PAYLINES</p>
+          <div className="game-sub-banner-ribbon">
+            <span className="ribbon-ankh">𓋹</span>
+            <p className="game-sub-banner">ANCIENT EGYPTIAN 5×3 ADVENTURE • 20 PAYLINES</p>
+            <span className="ribbon-ankh">𓋹</span>
+          </div>
         </header>
 
         {/* 5x3 Reels & Stone Temple Frame Wrapper */}
         <div className="machine-frame-wrapper">
+          {/* Torchlight Reflections on Hieroglyphs of Left & Right Pillars */}
+          <div className="pillar-torch-reflection left-pillar" />
+          <div className="pillar-torch-reflection right-pillar" />
+
           {/* Stone Temple Pillars Frame */}
           <img
             src="/assets/ui/frame.png"
@@ -307,10 +361,18 @@ export const App: React.FC = () => {
             hasAnticipation={hasAnticipation}
           />
 
-          {/* 20 Paylines Laser Overlay */}
+          {/* 20 Paylines Laser Overlay with Hover Preview */}
           <PaylineOverlay
             winningLines={winningLines}
             activeLineIndex={activePaylineIndex}
+            previewLineId={hoveredPaylineId}
+          />
+
+          {/* 20 Interactive Payline Gem Markers on Left & Right Pillars */}
+          <PaylineMarkers
+            activeWinningLineIds={winningLines.map((w) => w.payline.id)}
+            hoveredLineId={hoveredPaylineId}
+            onHoverLine={setHoveredPaylineId}
           />
         </div>
 
@@ -353,6 +415,18 @@ export const App: React.FC = () => {
         <FreeSpinsModal
           expandingSymbol={pendingExpandingSymbol}
           onStartFreeSpins={handleStartFreeSpins}
+        />
+      )}
+
+      {/* Cinematic Intro Screen before entering tomb */}
+      {!hasEnteredGame && (
+        <IntroScreen
+          onStartDemo={handleStartDemo}
+          onConnectWallet={handleStartWallet}
+          onOpenPaytable={() => setIsPaytableModalOpen(true)}
+          walletAddress={walletAddress}
+          isMuted={isMuted}
+          onToggleMute={handleToggleMute}
         />
       )}
     </div>

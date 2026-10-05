@@ -36,7 +36,12 @@ export const PaytableModal: React.FC<PaytableModalProps> = ({ onClose }) => {
           className="papyrus-scroll-bg"
         />
 
-        {/* Scroll Content Inside Frame */}
+        {/* Corner Close Button */}
+        <button className="scroll-corner-close-btn" onClick={onClose} title="Đóng">
+          ✕
+        </button>
+
+        {/* Scroll Content Strictly Inside Parchment Area */}
         <div className="scroll-content-body">
           <div className="scroll-header">
             <h2 className="scroll-title">BẢNG TRẢ THƯỞNG & LUẬT CHƠI</h2>

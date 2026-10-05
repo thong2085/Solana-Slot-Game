@@ -1,0 +1,341 @@
+.intro-screen-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: #080301;
+  transition: opacity 0.65s cubic-bezier(0.4, 0, 0.2, 1), transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.warp-out {
+    opacity: 0;
+    transform: scale(1.08);
+    pointer-events: none;
+    filter: blur(10px) brightness(1.6);
+  }
+
+  /* 1. Egyptian Burial Chamber Background */
+  .intro-chamber-bg {
+    position: absolute;
+    inset: 0;
+    background: url('/assets/ui/lucid-origin_inside_ancient_egyptian_pyramid_tomb_treasure_chests_with_gold_coins_mysterious_-0.jpg') center/cover no-repeat;
+    filter: brightness(0.6) contrast(1.15) saturate(1.1);
+    transform: scale(1.03);
+    animation: slowChamberDrift 30s ease-in-out infinite alternate;
+  }
+
+  .intro-dark-vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(10, 4, 1, 0.25) 30%, rgba(4, 2, 0, 0.92) 85%);
+    pointer-events: none;
+  }
+
+  /* Atmospheric Sunbeam */
+  .intro-sunbeam {
+    position: absolute;
+    top: 0;
+    left: 25%;
+    width: 50%;
+    height: 100%;
+    background: radial-gradient(ellipse at top, rgba(255, 215, 0, 0.16) 0%, transparent 65%);
+    mix-blend-mode: screen;
+    pointer-events: none;
+    animation: beamDrift 8s ease-in-out infinite alternate;
+  }
+
+  /* Chamber Torches */
+  .intro-torch-flame {
+    position: absolute;
+    top: 28%;
+    width: 45px;
+    height: 90px;
+    pointer-events: none;
+    background: radial-gradient(ellipse at bottom, #fff 0%, #ffeb3b 25%, #ff9800 65%, transparent 100%);
+    filter: drop-shadow(0 0 25px #ff9800) drop-shadow(0 0 50px #e65100);
+    animation: torchGlow 0.15s infinite alternate ease-in-out;
+
+    &.left-torch {
+      left: 3%;
+    }
+
+    &.right-torch {
+      right: 3%;
+    }
+  }
+
+  /* Top Controls */
+  .intro-floating-top {
+    position: absolute;
+    top: 18px;
+    right: 25px;
+    z-index: 25;
+
+    .intro-sound-toggle-btn {
+      background: rgba(18, 8, 3, 0.88);
+      border: 1px solid rgba(255, 215, 0, 0.5);
+      border-radius: 20px;
+      color: #ffe4b5;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 7px 16px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+
+      &:hover {
+        background: rgba(45, 20, 8, 0.98);
+        border-color: #ffd700;
+        color: #fff;
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+      }
+
+      &.muted {
+        color: #888;
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+    }
+  }
+
+  /* Grand Stage: Enlarged Full-Bleed Poster with Centered Golden Tablet */
+  .intro-grand-stage {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    animation: stageFadeIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+
+    .poster-canvas-wrapper {
+      position: relative;
+      height: 100vh;
+      width: 100vh;
+      max-width: 100vw;
+      aspect-ratio: 1 / 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+
+      .hero-poster-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      .poster-central-depth-shadow {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 50% 60%, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.25) 45%, transparent 75%);
+        pointer-events: none;
+      }
+
+      /* Royal Golden Tablet Centered over the Poster */
+      .poster-center-tablet {
+        position: absolute;
+        top: 64%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 46%;
+        max-width: 440px;
+        z-index: 5;
+        transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+
+        &:hover {
+          transform: translate(-50%, -51%) scale(1.02);
+        }
+
+        .tablet-frame-relative {
+          position: relative;
+          width: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+          .tablet-gold-frame-img {
+            width: 100%;
+            height: auto;
+            display: block;
+            filter: drop-shadow(0 0 30px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 20px rgba(255, 215, 0, 0.5));
+            user-select: none;
+            pointer-events: none;
+          }
+
+          /* Content Strictly Nestled on the Golden Parchment Area */
+          .tablet-parchment-content {
+            position: absolute;
+            top: 32%;
+            left: 18%;
+            width: 64%;
+            height: 43%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            text-align: center;
+            box-sizing: border-box;
+            padding: 2px 6px;
+            overflow: hidden;
+
+            /* 2 Authentic Ancient Game Cartouche Buttons */
+            .tablet-game-actions {
+              display: flex;
+              flex-direction: column;
+              gap: 8px;
+              width: 100%;
+
+              .game-cartouche-btn {
+                position: relative;
+                height: 40px;
+                border-radius: 6px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                overflow: hidden;
+                transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+                .btn-inner-border {
+                  position: absolute;
+                  inset: 2px;
+                  border: 1px dashed rgba(255, 255, 255, 0.4);
+                  border-radius: 4px;
+                  pointer-events: none;
+                }
+
+                .btn-icon {
+                  font-size: 16px;
+                  flex-shrink: 0;
+                }
+
+                .btn-title {
+                  font-family: 'Cinzel', serif, 'Arial';
+                  font-size: 13px;
+                  font-weight: 900;
+                  letter-spacing: 1.5px;
+                }
+
+                /* Primary Royal Gold Button */
+                &.btn-gold-royal {
+                  background: linear-gradient(180deg, #ffe082 0%, #ffd700 25%, #c59b27 70%, #7d5408 100%);
+                  border: 2px solid #fff59d;
+                  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.8), inset 0 -2px 0 rgba(80, 45, 0, 0.6);
+                  color: #2b1300;
+                  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+
+                  &:hover {
+                    transform: translateY(-2px);
+                    filter: brightness(1.15);
+                    box-shadow: 0 6px 16px rgba(255, 215, 0, 0.6), 0 4px 12px rgba(0, 0, 0, 0.7);
+                  }
+
+                  &:active {
+                    transform: translateY(1px);
+                    filter: brightness(0.95);
+                  }
+                }
+
+                /* Secondary Turquoise Lapis Stone Button */
+                &.btn-turquoise-wallet {
+                  background: linear-gradient(180deg, #174e5c 0%, #0d303a 60%, #05181e 100%);
+                  border: 2px solid #00e5ff;
+                  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(0, 229, 255, 0.6), inset 0 -2px 0 rgba(0, 0, 0, 0.8);
+                  color: #00e5ff;
+                  text-shadow: 0 0 8px rgba(0, 229, 255, 0.7);
+
+                  &:hover {
+                    transform: translateY(-2px);
+                    filter: brightness(1.2);
+                    box-shadow: 0 6px 18px rgba(0, 229, 255, 0.5), 0 4px 12px rgba(0, 0, 0, 0.7);
+                  }
+
+                  &:active {
+                    transform: translateY(1px);
+                    filter: brightness(0.95);
+                  }
+                }
+              }
+            }
+
+            /* Paytable Action Button */
+            .tablet-footer {
+              .tablet-paytable-btn {
+                background: rgba(50, 25, 10, 0.12);
+                border: 1.5px solid rgba(138, 72, 5, 0.45);
+                border-radius: 4px;
+                color: #582903;
+                font-family: 'Cinzel', serif, 'Arial';
+                font-size: 10px;
+                font-weight: 800;
+                letter-spacing: 0.5px;
+                padding: 3px 12px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+
+                &:hover {
+                  background: rgba(50, 25, 10, 0.25);
+                  border-color: #8a4805;
+                  color: #2e1401;
+                  transform: translateY(-1px);
+                }
+            }
+          }
+        }
+      }
+      }
+    }
+  }
+}
+
+/* Animations */
+@keyframes slowChamberDrift {
+  0% { transform: scale(1.03) translate(0, 0); }
+  50% { transform: scale(1.06) translate(-1%, -1%); }
+  100% { transform: scale(1.03) translate(0, 0); }
+}
+
+@keyframes beamDrift {
+  0% { opacity: 0.25; transform: scaleX(0.95); }
+  100% { opacity: 0.65; transform: scaleX(1.05); }
+}
+
+@keyframes torchGlow {
+  0% { transform: scaleY(0.97) scaleX(1.02); opacity: 0.85; }
+  100% { transform: scaleY(1.03) scaleX(0.98); opacity: 1; }
+}
+
+@keyframes stageFadeIn {
+  0% { opacity: 0; transform: translateY(20px) scale(0.97); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes buttonShine {
+  0% { left: -100%; }
+  35% { left: 150%; }
+  100% { left: 150%; }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .intro-screen-overlay {
+    .intro-grand-stage {
+      .poster-canvas-wrapper {
+        .poster-center-tablet {
+          width: 80%;
+          top: 62%;
+        }
+      }
+    }
+  }
+}

@@ -55,6 +55,16 @@ export const FreeSpinsModal: React.FC<FreeSpinsModalProps> = ({
           <p className="fs-subtitle">Cuốn Sách Thần Ra Đang Lựa Chọn Biểu Tượng Mở Rộng...</p>
         </div>
 
+        {/* Divine Book of Ra (Scatter) Showcase */}
+        <div className="book-of-ra-showcase">
+          <img
+            src="/assets/symbols/scatter.png"
+            alt="Sách Phép Thần Ra"
+            className="book-of-ra-img"
+          />
+          <div className="book-glow-aura" />
+        </div>
+
         {/* Center Book of Ra & Chosen Symbol */}
         <div className="chosen-symbol-container">
           <div className="symbol-pedestal">

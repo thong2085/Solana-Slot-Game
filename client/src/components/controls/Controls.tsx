@@ -40,8 +40,13 @@ export const Controls: React.FC<ControlsProps> = ({
 }) => {
   return (
     <div className="controls-dashboard">
-      {/* Top Status Bar: Meters & Info */}
+      {/* Top Status Bar: Meters & Info with Royal Gold Corners */}
       <div className="dashboard-meters">
+        <div className="gold-filigree-corner top-left" />
+        <div className="gold-filigree-corner top-right" />
+        <div className="gold-filigree-corner bottom-left" />
+        <div className="gold-filigree-corner bottom-right" />
+
         {/* Balance Meter */}
         <div className="meter-box balance-meter">
           <span className="meter-label">SỐ DƯ (SOL)</span>
@@ -120,8 +125,14 @@ export const Controls: React.FC<ControlsProps> = ({
           </button>
         </div>
 
-        {/* Center: 3D Scarab Spin Button */}
+        {/* Center: 3D Scarab Spin Button with Altar Pedestal */}
         <div className="center-spin-container">
+          {/* Royal Egyptian Altar Pedestal */}
+          <div className="spin-altar-pedestal">
+            <div className="pedestal-stepped-base" />
+            <div className="pedestal-golden-sun-disc" />
+          </div>
+
           <button
             className={`scarab-spin-button ${isSpinning ? 'spinning-active' : ''} ${
               isFreeSpins ? 'free-spin-active' : ''
@@ -130,17 +141,17 @@ export const Controls: React.FC<ControlsProps> = ({
             disabled={isSpinning}
             title="Quay Ngay!"
           >
-            {/* Spinning Glow Halo */}
-            <div className="spin-glow-ring" />
             {/* 3D Scarab Image */}
             <img
               src="/assets/ui/spin_button.png"
               alt="SPIN"
               className="scarab-gem-img"
             />
-            <span className="spin-label-text">
-              {isFreeSpins ? 'FREE' : isSpinning ? 'QUAY...' : 'SPIN'}
-            </span>
+            {(isSpinning || isFreeSpins) && (
+              <span className="spin-label-text">
+                {isFreeSpins ? 'FREE SPIN' : 'QUAY...'}
+              </span>
+            )}
           </button>
         </div>
 

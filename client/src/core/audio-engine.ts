@@ -242,6 +242,40 @@ class SoundEngine {
       osc.stop(chimeTime + 0.22);
     }
   }
+
+  // Ancient Egyptian entrance gong when entering the tomb
+  public playTombEntranceGong() {
+    if (this.isMuted) return;
+    this.initCtx();
+    if (!this.ctx) return;
+
+    const t = this.ctx.currentTime;
+    // Deep resonant tom-drum
+    const osc1 = this.ctx.createOscillator();
+    const gain1 = this.ctx.createGain();
+    osc1.type = 'triangle';
+    osc1.frequency.setValueAtTime(120, t);
+    osc1.frequency.exponentialRampToValueAtTime(45, t + 1.2);
+    gain1.gain.setValueAtTime(0.6, t);
+    gain1.gain.exponentialRampToValueAtTime(0.01, t + 1.4);
+    osc1.connect(gain1);
+    gain1.connect(this.ctx.destination);
+    osc1.start(t);
+    osc1.stop(t + 1.5);
+
+    // Ancient resonant bell
+    const osc2 = this.ctx.createOscillator();
+    const gain2 = this.ctx.createGain();
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(440, t);
+    osc2.frequency.exponentialRampToValueAtTime(220, t + 1.8);
+    gain2.gain.setValueAtTime(0.35, t);
+    gain2.gain.exponentialRampToValueAtTime(0.005, t + 2.0);
+    osc2.connect(gain2);
+    gain2.connect(this.ctx.destination);
+    osc2.start(t);
+    osc2.stop(t + 2.1);
+  }
 }
 
 export const soundEngine = new SoundEngine();

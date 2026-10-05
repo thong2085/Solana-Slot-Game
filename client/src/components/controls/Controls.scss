@@ -1,24 +1,63 @@
 .controls-dashboard {
   width: 100%;
   max-width: 960px;
-  margin: 10px auto 0;
+  margin: -16px auto 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   position: relative;
   z-index: 25;
   user-select: none;
 
-  /* Top Meters Bar */
+  /* Top Meters Bar with Royal Gold Corners & Hieroglyphic Trim */
   .dashboard-meters {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: linear-gradient(180deg, rgba(30, 18, 8, 0.95) 0%, rgba(15, 8, 3, 0.98) 100%);
-    border: 2px solid rgba(218, 165, 32, 0.6);
+    position: relative;
+    background: linear-gradient(180deg, rgba(32, 18, 8, 0.96) 0%, rgba(16, 8, 3, 0.98) 100%);
+    border: 2px solid rgba(218, 165, 32, 0.7);
     border-radius: 12px;
-    padding: 8px 18px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8), inset 0 1px 3px rgba(255, 215, 0, 0.3);
+    padding: 8px 22px;
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.88), inset 0 1px 3px rgba(255, 215, 0, 0.35);
+
+    .gold-filigree-corner {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      pointer-events: none;
+      border: 2px solid #ffd700;
+      box-shadow: 0 0 6px rgba(255, 215, 0, 0.6);
+
+      &.top-left {
+        top: 3px;
+        left: 3px;
+        border-right: none;
+        border-bottom: none;
+        border-top-left-radius: 6px;
+      }
+      &.top-right {
+        top: 3px;
+        right: 3px;
+        border-left: none;
+        border-bottom: none;
+        border-top-right-radius: 6px;
+      }
+      &.bottom-left {
+        bottom: 3px;
+        left: 3px;
+        border-right: none;
+        border-top: none;
+        border-bottom-left-radius: 6px;
+      }
+      &.bottom-right {
+        bottom: 3px;
+        right: 3px;
+        border-left: none;
+        border-top: none;
+        border-bottom-right-radius: 6px;
+      }
+    }
 
     .meter-box {
       display: flex;
@@ -212,74 +251,106 @@
       }
     }
 
-    /* 3D Scarab Spin Button */
+    /* 3D Scarab Spin Button on Royal Altar Pedestal */
     .center-spin-container {
       position: relative;
       display: flex;
       justify-content: center;
       align-items: center;
-      margin: 0 15px;
+      margin: 0 16px;
+
+      /* Royal Stone Altar Pedestal */
+      .spin-altar-pedestal {
+        position: absolute;
+        inset: -8px -12px -10px -12px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        pointer-events: none;
+        z-index: 1;
+
+        .pedestal-stepped-base {
+          position: absolute;
+          bottom: 4px;
+          width: 120px;
+          height: 12px;
+          background: linear-gradient(180deg, #543314 0%, #201004 100%);
+          border: 1.5px solid #d4af37;
+          border-radius: 6px;
+          box-shadow: 0 6px 14px rgba(0, 0, 0, 0.9), inset 0 1px 2px #ffd700;
+        }
+
+        .pedestal-golden-sun-disc {
+          position: absolute;
+          width: 152px;
+          height: 152px;
+          border-radius: 50%;
+          background: radial-gradient(
+            circle,
+            rgba(218, 165, 32, 0.22) 0%,
+            rgba(255, 215, 0, 0.08) 55%,
+            transparent 72%
+          );
+          box-shadow: 0 0 25px rgba(0, 0, 0, 0.95);
+          animation: pedestalPulse 3s ease-in-out infinite alternate;
+        }
+      }
 
       .scarab-spin-button {
-        width: 98px;
-        height: 98px;
-        border-radius: 50%;
-        background: radial-gradient(circle, #2a180b 0%, #100803 100%);
+        z-index: 2;
+        width: 140px;
+        height: 140px;
+        background: transparent;
         border: none;
+        outline: none;
         cursor: pointer;
         position: relative;
         display: flex;
         justify-content: center;
         align-items: center;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.9), 0 0 15px rgba(255, 215, 0, 0.4);
-        transition: transform 0.15s ease, filter 0.2s ease;
+        padding: 0;
+        box-shadow: none;
+        transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
         &:hover:not(:disabled) {
-          transform: scale(1.06);
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9), 0 0 25px rgba(255, 215, 0, 0.8);
+          transform: scale(1.08);
 
           .scarab-gem-img {
-            filter: drop-shadow(0 0 15px #ffd700);
+            filter: drop-shadow(0 14px 26px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 14px rgba(255, 215, 0, 0.5));
           }
         }
 
         &:active:not(:disabled) {
-          transform: scale(0.95);
+          transform: scale(0.94);
         }
 
         &:disabled {
           cursor: not-allowed;
-          filter: grayscale(0.5) brightness(0.8);
-        }
-
-        .spin-glow-ring {
-          position: absolute;
-          inset: -6px;
-          border-radius: 50%;
-          border: 2px dashed rgba(255, 215, 0, 0.6);
-          animation: rotateRing 12s linear infinite;
+          filter: grayscale(0.6) brightness(0.7);
         }
 
         .scarab-gem-img {
-          width: 92%;
-          height: 92%;
+          width: 100%;
+          height: 100%;
           object-fit: contain;
-          border-radius: 50%;
+          filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.9));
           transition: filter 0.2s ease;
         }
 
         .spin-label-text {
           position: absolute;
-          bottom: 12px;
+          bottom: 16px;
           font-size: 11px;
           font-weight: 900;
           letter-spacing: 1px;
           color: #fff;
-          background: rgba(0, 0, 0, 0.75);
-          padding: 2px 8px;
+          background: rgba(0, 0, 0, 0.85);
+          padding: 3px 10px;
           border-radius: 6px;
-          border: 1px solid rgba(255, 215, 0, 0.5);
+          border: 1px solid rgba(255, 215, 0, 0.7);
           text-shadow: 0 0 6px #ffd700;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
         }
 
         &.spinning-active {
@@ -289,11 +360,8 @@
         }
 
         &.free-spin-active {
-          box-shadow: 0 0 35px rgba(213, 0, 249, 0.8);
-
-          .spin-glow-ring {
-            border-color: #d500f9;
-            animation: rotateRing 4s linear infinite;
+          .scarab-gem-img {
+            filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 20px rgba(213, 0, 249, 0.85));
           }
         }
       }
@@ -302,14 +370,9 @@
 }
 
 /* Animations */
-@keyframes rotateRing {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
 @keyframes pulseSpin {
   0% { transform: scale(0.96); filter: brightness(1); }
-  100% { transform: scale(1.02); filter: brightness(1.3); }
+  100% { transform: scale(1.02); filter: brightness(1.25); }
 }
 
 @keyframes winGlow {
@@ -320,4 +383,36 @@
 @keyframes pulseAuto {
   0% { box-shadow: 0 0 8px #ff5252; }
   100% { box-shadow: 0 0 20px #ff1744; }
+}
+
+@keyframes pedestalPulse {
+  0% { transform: scale(0.96); opacity: 0.6; }
+  100% { transform: scale(1.04); opacity: 0.95; }
+}
+
+@media (max-width: 768px) {
+  .controls-dashboard {
+    margin: -8px auto 0;
+
+    .dashboard-meters {
+      padding: 6px 10px;
+
+      .meter-box .meter-value {
+        font-size: 16px;
+      }
+    }
+
+    .dashboard-actions {
+      .center-spin-container .scarab-spin-button {
+        width: 100px;
+        height: 100px;
+      }
+
+      .action-btn {
+        height: 40px;
+        padding: 0 10px;
+        font-size: 11px;
+      }
+    }
+  }
 }
