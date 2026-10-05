@@ -1,58 +1,149 @@
-.header {
+.slot-game-app {
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
   display: flex;
-  justify-content: flex-end;
-  padding: 18px 18px 0;
-  height: 40px;
+  flex-direction: column;
   align-items: center;
-  color: #fff;
-  font-size: 14px;
-  font-weight: bold;
+  justify-content: flex-start;
+  padding: 15px 10px 40px;
+  box-sizing: border-box;
+  overflow-x: hidden;
 
-  svg {
-    fill: #fff;
-    height: 17px;
-    width: 28px;
-    margin-bottom: -3px;
-    margin-right: 12px;
+  /* Ambient Torches Glow in the Tomb */
+  .tomb-background-ambient {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    background: radial-gradient(
+        circle at 15% 25%,
+        rgba(255, 120, 0, 0.15) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 85% 25%,
+        rgba(255, 120, 0, 0.15) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 50% 60%,
+        rgba(218, 165, 32, 0.08) 0%,
+        transparent 65%
+      );
+    animation: ambientTorchFlicker 3s ease-in-out infinite alternate;
+  }
+
+  /* Slot Machine Viewport Container */
+  .slot-machine-viewport {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 980px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    /* Header Logo */
+    .game-header-brand {
+      text-align: center;
+      margin-bottom: 8px;
+
+      .game-main-title {
+        font-family: 'Cinzel', serif, 'Arial';
+        font-size: 32px;
+        font-weight: 900;
+        margin: 0;
+        letter-spacing: 3px;
+        background: linear-gradient(
+          180deg,
+          #ffffff 0%,
+          #ffd700 45%,
+          #ff8f00 75%,
+          #8b5a00 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        filter: drop-shadow(0 0 18px rgba(255, 215, 0, 0.75))
+          drop-shadow(0 4px 8px rgba(0, 0, 0, 0.9));
+        animation: titleGoldShimmer 4s ease-in-out infinite alternate;
+      }
+
+      .game-sub-banner {
+        margin: 4px 0 0;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        color: #d4af37;
+        text-shadow: 0 1px 3px #000;
+      }
+    }
+
+    /* 5x3 Reels & Stone Temple Machine Frame */
+    .machine-frame-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1024 / 1024;
+      max-width: 920px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      .stone-temple-frame-img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        z-index: 15;
+        pointer-events: none;
+        filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.95))
+          drop-shadow(0 0 25px rgba(218, 165, 32, 0.25));
+      }
+    }
   }
 }
 
-.logo {
-  display: flex;
-  justify-content: center;
-  margin-top: 3vh;
-  height: 160px;
+/* Animations */
+@keyframes ambientTorchFlicker {
+  0% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.85;
+  }
 }
 
-.slot-container {
-  background-image: url("/img/machine.png");
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center center;
-  display: flex;
-  // justify-content: center;
-  flex-direction: column;
-  align-items: center;
-  height: 610px;
-  width: 800px;
-  min-width: 800px;
+@keyframes titleGoldShimmer {
+  0% {
+    filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6))
+      drop-shadow(0 4px 8px rgba(0, 0, 0, 0.9));
+  }
+  100% {
+    filter: drop-shadow(0 0 28px rgba(255, 235, 100, 0.9))
+      drop-shadow(0 4px 10px rgba(0, 0, 0, 0.9));
+  }
 }
 
-.contaner-positioner {
-  display: flex;
-  justify-content: center;
-  position: relative;
-  z-index: 10;
-}
+/* Responsive Scaling for smaller screens */
+@media (max-width: 768px) {
+  .slot-game-app {
+    padding: 10px 5px 30px;
 
-.collect-container {
-  display: flex;
-  justify-content: center;
-}
+    .slot-machine-viewport {
+      .game-header-brand {
+        .game-main-title {
+          font-size: 24px;
+          letter-spacing: 2px;
+        }
 
-.cluster {
-  color: #ffffff99;
-  font-size: 12px;
-  text-align: right;
-  padding: 8px 21px 0;
+        .game-sub-banner {
+          font-size: 9px;
+        }
+      }
+    }
+  }
 }

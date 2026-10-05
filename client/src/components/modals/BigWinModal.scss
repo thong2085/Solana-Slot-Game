@@ -1,0 +1,138 @@
+.big-win-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  animation: fadeInModal 0.3s ease-out forwards;
+
+  /* Coin Shower Falling Layer */
+  .coin-shower-container {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+
+    .falling-coin {
+      position: absolute;
+      top: -60px;
+      animation: coinDrop linear infinite;
+
+      .spinning-coin-img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.6));
+      }
+    }
+  }
+
+  /* Center Dialog */
+  .big-win-dialog {
+    position: relative;
+    z-index: 105;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 680px;
+    width: 90%;
+    animation: zoomInBanner 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+
+    .big-win-banner-img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 0 35px rgba(255, 215, 0, 0.8)) drop-shadow(0 15px 30px rgba(0, 0, 0, 0.9));
+      animation: floatBanner 2.5s ease-in-out infinite alternate;
+    }
+
+    .big-win-amount-box {
+      margin-top: -35px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: radial-gradient(circle, rgba(40, 25, 10, 0.95) 0%, rgba(15, 8, 3, 0.98) 100%);
+      padding: 14px 35px;
+      border-radius: 16px;
+      border: 2px solid #ffd700;
+      box-shadow: 0 0 25px rgba(255, 215, 0, 0.6), inset 0 0 15px rgba(255, 140, 0, 0.4);
+
+      .big-win-label {
+        font-size: 14px;
+        font-weight: 800;
+        letter-spacing: 2px;
+        color: #ffcc00;
+        text-shadow: 0 1px 3px #000;
+      }
+
+      .big-win-number {
+        font-family: 'Cinzel', serif, 'Arial';
+        font-size: 38px;
+        font-weight: 900;
+        color: #76ff03;
+        text-shadow: 0 0 15px #76ff03, 0 3px 6px #000;
+        letter-spacing: 1px;
+      }
+    }
+
+    .collect-win-btn {
+      margin-top: 20px;
+      padding: 14px 40px;
+      border-radius: 30px;
+      background: linear-gradient(180deg, #ffd700 0%, #ff8f00 100%);
+      border: 2px solid #fff;
+      color: #000;
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(255, 215, 0, 0.7);
+      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+      &:hover {
+        transform: scale(1.08);
+        box-shadow: 0 10px 35px rgba(255, 215, 0, 0.9);
+        filter: brightness(1.15);
+      }
+
+      &:active {
+        transform: scale(0.96);
+      }
+    }
+  }
+}
+
+/* Animations */
+@keyframes fadeInModal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes zoomInBanner {
+  0% { transform: scale(0.4) rotate(-4deg); opacity: 0; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+@keyframes floatBanner {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-12px); }
+}
+
+@keyframes coinDrop {
+  0% {
+    top: -60px;
+    opacity: 1;
+    transform: rotate(0deg);
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    top: 105vh;
+    opacity: 0;
+    transform: rotate(360deg);
+  }
+}

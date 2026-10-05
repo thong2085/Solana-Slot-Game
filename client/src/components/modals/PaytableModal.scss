@@ -1,0 +1,195 @@
+.paytable-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(8px);
+  animation: fadeInModal 0.25s ease-out forwards;
+  padding: 20px;
+  box-sizing: border-box;
+
+  .paytable-scroll-dialog {
+    position: relative;
+    max-width: 900px;
+    width: 100%;
+    max-height: 90vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: zoomScroll 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+
+    .papyrus-scroll-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 20px rgba(218, 165, 32, 0.3));
+    }
+
+    .scroll-content-body {
+      position: relative;
+      z-index: 5;
+      width: 82%;
+      max-height: 75vh;
+      overflow-y: auto;
+      padding: 30px 25px;
+      color: #ffe6a7;
+      text-shadow: 0 1px 3px #000;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+
+      /* Scrollbar */
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
+      &::-webkit-scrollbar-thumb {
+        background: #d4af37;
+        border-radius: 4px;
+      }
+
+      .scroll-header {
+        text-align: center;
+        border-bottom: 1.5px solid rgba(218, 165, 32, 0.4);
+        padding-bottom: 12px;
+
+        .scroll-title {
+          font-family: 'Cinzel', serif, 'Arial';
+          font-size: 24px;
+          font-weight: 900;
+          color: #ffd700;
+          letter-spacing: 2px;
+          margin: 0;
+          text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+        }
+
+        .scroll-subtitle {
+          font-size: 13px;
+          color: #d1b88a;
+          margin-top: 5px;
+          font-weight: 600;
+        }
+      }
+
+      .symbol-payout-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 12px;
+
+        .payout-card {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          background: rgba(20, 10, 5, 0.85);
+          border: 1.5px solid rgba(218, 165, 32, 0.4);
+          border-radius: 8px;
+          padding: 8px;
+
+          &.tier-high {
+            border-color: #ffd700;
+            background: rgba(35, 18, 5, 0.9);
+          }
+
+          &.tier-special {
+            border-color: #00e5ff;
+            background: rgba(5, 25, 35, 0.9);
+          }
+
+          .payout-card-img {
+            width: 50px;
+            height: 50px;
+            flex-shrink: 0;
+
+            img {
+              width: 100%;
+              height: 100%;
+              object-fit: contain;
+            }
+          }
+
+          .payout-card-info {
+            display: flex;
+            flex-direction: column;
+
+            .card-name {
+              font-size: 12px;
+              font-weight: 800;
+              color: #ffd700;
+              margin-bottom: 4px;
+            }
+
+            .payout-tiers {
+              display: flex;
+              flex-direction: column;
+              gap: 2px;
+
+              .tier-row {
+                font-size: 11px;
+                color: #e0d0b0;
+
+                b {
+                  color: #76ff03;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      .features-section {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        background: rgba(15, 8, 3, 0.88);
+        border: 1.5px solid #d4af37;
+        border-radius: 10px;
+        padding: 15px;
+
+        .feature-block {
+          h3 {
+            font-size: 14px;
+            color: #ffd700;
+            margin: 0 0 6px;
+            font-weight: 800;
+          }
+
+          p {
+            font-size: 12px;
+            line-height: 1.5;
+            color: #dcd0bc;
+            margin: 0;
+          }
+        }
+      }
+
+      .close-scroll-btn {
+        margin: 10px auto 0;
+        padding: 10px 35px;
+        border-radius: 25px;
+        background: linear-gradient(180deg, #d4af37 0%, #8b6508 100%);
+        border: 1.5px solid #fff;
+        color: #000;
+        font-size: 13px;
+        font-weight: 900;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          transform: scale(1.06);
+          filter: brightness(1.2);
+          box-shadow: 0 0 15px #ffd700;
+        }
+      }
+    }
+  }
+}
+
+@keyframes zoomScroll {
+  from { transform: scale(0.7); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
