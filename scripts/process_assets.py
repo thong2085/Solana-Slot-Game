@@ -2,8 +2,10 @@ import os
 from PIL import Image, ImageDraw
 
 SRC_DIR = '/Applications/XAMPP/xamppfiles/htdocs/Solana-Slot-Game/img'
-SYMBOLS_DIR = '/Applications/XAMPP/xamppfiles/htdocs/Solana-Slot-Game/client/public/assets/symbols'
-UI_DIR = '/Applications/XAMPP/xamppfiles/htdocs/Solana-Slot-Game/client/public/assets/ui'
+PUB_SYM = '/Applications/XAMPP/xamppfiles/htdocs/Solana-Slot-Game/client/public/assets/symbols'
+PUB_UI = '/Applications/XAMPP/xamppfiles/htdocs/Solana-Slot-Game/client/public/assets/ui'
+SRC_SYM = '/Applications/XAMPP/xamppfiles/htdocs/Solana-Slot-Game/client/src/assets/symbols'
+SRC_UI = '/Applications/XAMPP/xamppfiles/htdocs/Solana-Slot-Game/client/src/assets/ui'
 
 def bfs_clean(img, seeds, is_bg_func):
     img = img.convert('RGBA')
@@ -48,82 +50,204 @@ def normalize_canvas(img, target_size=(256, 256)):
     canvas.paste(img, offset)
     return canvas
 
-def process_mid_and_special():
-    mid = Image.open(os.path.join(SRC_DIR, 'lucid-origin_set_of_4_mid-pay_slot_game_symbols_golden_scarab_beetle_with_wings_ankh_cross_wi-0.jpg'))
-    sp = Image.open(os.path.join(SRC_DIR, 'gpt-image-2_set_of_2_special_slot_symbols_Scatter_symbol_as_a_glowing_ancient_magic_book_wit-0.jpg'))
+def process_all():
+    os.makedirs(PUB_SYM, exist_ok=True)
+    os.makedirs(PUB_UI, exist_ok=True)
+    os.makedirs(SRC_SYM, exist_ok=True)
+    os.makedirs(SRC_UI, exist_ok=True)
 
-    # 1. Ankh (clean drop shadow and center loop hole)
-    ankh_crop = mid.crop((550, 30, 920, 480))
-    ankh_hsv = ankh_crop.convert('HSV')
+    # 1. Letters (Low Pay: A, K, Q, J, 10) - Tight cut
+    letters_file = os.path.join(SRC_DIR, 'gpt-image-2_full_set_of_slot_game_symbols_A_K_Q_J_10_stylized_as_ancient_egyptian_hieroglyph-0.jpg')
+    letters_im = Image.open(letters_file)
+    letter_boxes = {
+        'a': (70, 60, 490, 490),
+        'k': (500, 60, 930, 490),
+        'q': (10, 510, 310, 900),
+        'j': (300, 510, 530, 900),
+        '10': (530, 510, 990, 900)
+    }
+    for name, box in letter_boxes.items():
+        crop = letters_im.crop(box)
+        w, h = crop.size
+        hsv = crop.convert('HSV')
+        def l_bg(x, y):
+            H, S, V = hsv.getpixel((x, y))
+            return (S < 45) or (V > 215 and S < 75)
+        seeds = get_border_seeds(w, h, l_bg)
+        if name == '10':
+            seeds.append((330, 200))
+        elif name == 'a':
+            seeds.append((w // 2, h - 40))
+        elif name == 'q':
+            seeds.append((w // 2, h // 2 - 20))
+        elif name == 'k':
+            seeds.append((w // 2, h // 2))
+        res = normalize_canvas(bfs_clean(crop, seeds, l_bg))
+        res.save(os.path.join(PUB_SYM, f'{name}.png'))
+
+    # 2. Mid Pay: scarab, ankh, eye, scepter
+    mid_file = os.path.join(SRC_DIR, 'lucid-origin_set_of_4_mid-pay_slot_game_symbols_golden_scarab_beetle_with_wings_ankh_cross_wi-0.jpg')
+    mid_im = Image.open(mid_file)
+    
+    # Ankh
+    ankh_crop = mid_im.crop((550, 30, 920, 480))
     w, h = ankh_crop.size
-    def ankh_bg(x, y):
-        H, S, V = ankh_hsv.getpixel((x, y))
-        return (S < 90) or (S < 135 and V < 165)
-    seeds = get_border_seeds(w, h, ankh_bg)
+    hsv = ankh_crop.convert('HSV')
+    seeds = get_border_seeds(w, h, lambda x, y: hsv.getpixel((x, y))[1] < 90 or (hsv.getpixel((x, y))[1] < 135 and hsv.getpixel((x, y))[2] < 165))
     seeds.append((w // 2, 115))
-    ankh_res = normalize_canvas(bfs_clean(ankh_crop, seeds, ankh_bg))
-    ankh_res.save(os.path.join(SYMBOLS_DIR, 'ankh.png'))
+    normalize_canvas(bfs_clean(ankh_crop, seeds, lambda x, y: hsv.getpixel((x, y))[1] < 90 or (hsv.getpixel((x, y))[1] < 135 and hsv.getpixel((x, y))[2] < 165))).save(os.path.join(PUB_SYM, 'ankh.png'))
 
-    # 2. Eye of Horus (clean drop shadow and lower spiral loop)
-    eye_crop = mid.crop((35, 545, 485, 925))
-    eye_hsv = eye_crop.convert('HSV')
+    # Eye
+    eye_crop = mid_im.crop((35, 545, 485, 925))
     w, h = eye_crop.size
-    def eye_bg(x, y):
-        H, S, V = eye_hsv.getpixel((x, y))
-        return (S < 90) or (S < 135 and V < 170)
-    seeds = get_border_seeds(w, h, eye_bg)
+    hsv = eye_crop.convert('HSV')
+    seeds = get_border_seeds(w, h, lambda x, y: hsv.getpixel((x, y))[1] < 90 or (hsv.getpixel((x, y))[1] < 135 and hsv.getpixel((x, y))[2] < 170))
     seeds.append((120, 280))
-    eye_res = normalize_canvas(bfs_clean(eye_crop, seeds, eye_bg))
-    eye_res.save(os.path.join(SYMBOLS_DIR, 'eye.png'))
+    normalize_canvas(bfs_clean(eye_crop, seeds, lambda x, y: hsv.getpixel((x, y))[1] < 90 or (hsv.getpixel((x, y))[1] < 135 and hsv.getpixel((x, y))[2] < 170))).save(os.path.join(PUB_SYM, 'eye.png'))
 
-    # 3. Scarab (clean wing fringes and antenna drop shadow)
-    scarab_crop = mid.crop((20, 45, 505, 455))
-    scarab_hsv = scarab_crop.convert('HSV')
+    # Scarab
+    scarab_crop = mid_im.crop((20, 45, 505, 455))
     w, h = scarab_crop.size
-    def scarab_bg(x, y):
-        H, S, V = scarab_hsv.getpixel((x, y))
-        return (S < 85) or (S < 130 and V < 165)
-    seeds = get_border_seeds(w, h, scarab_bg)
-    scarab_res = normalize_canvas(bfs_clean(scarab_crop, seeds, scarab_bg))
-    scarab_res.save(os.path.join(SYMBOLS_DIR, 'scarab.png'))
+    hsv = scarab_crop.convert('HSV')
+    seeds = get_border_seeds(w, h, lambda x, y: hsv.getpixel((x, y))[1] < 85 or (hsv.getpixel((x, y))[1] < 130 and hsv.getpixel((x, y))[2] < 165))
+    normalize_canvas(bfs_clean(scarab_crop, seeds, lambda x, y: hsv.getpixel((x, y))[1] < 85 or (hsv.getpixel((x, y))[1] < 130 and hsv.getpixel((x, y))[2] < 165))).save(os.path.join(PUB_SYM, 'scarab.png'))
 
-    # 4. Scepter (clean staff drop shadow)
-    scepter_crop = mid.crop((560, 500, 910, 980))
-    scepter_hsv = scepter_crop.convert('HSV')
+    # Scepter
+    scepter_crop = mid_im.crop((560, 500, 910, 980))
     w, h = scepter_crop.size
-    def scepter_bg(x, y):
-        H, S, V = scepter_hsv.getpixel((x, y))
-        return (S < 90) or (S < 135 and V < 165)
-    seeds = get_border_seeds(w, h, scepter_bg)
-    scepter_res = normalize_canvas(bfs_clean(scepter_crop, seeds, scepter_bg))
-    scepter_res.save(os.path.join(SYMBOLS_DIR, 'scepter.png'))
+    hsv = scepter_crop.convert('HSV')
+    seeds = get_border_seeds(w, h, lambda x, y: hsv.getpixel((x, y))[1] < 90 or (hsv.getpixel((x, y))[1] < 135 and hsv.getpixel((x, y))[2] < 165))
+    normalize_canvas(bfs_clean(scepter_crop, seeds, lambda x, y: hsv.getpixel((x, y))[1] < 90 or (hsv.getpixel((x, y))[1] < 135 and hsv.getpixel((x, y))[2] < 165))).save(os.path.join(PUB_SYM, 'scepter.png'))
 
-    # 5. Scatter Book (crop with top margin for fire aura, clean white aura)
-    scatter_crop = sp.crop((15, 110, 475, 840))
-    scatter_hsv = scatter_crop.convert('HSV')
+    # 3. High Pay (Gods / Characters: Anubis, Pharaoh, Cleopatra, Prince) - Tight cut
+    high_file = os.path.join(SRC_DIR, 'lucid-origin_set_of_4_high-pay_slot_game_character_symbols_in_circular_and_rectangular_golden-0.jpg')
+    high_im = Image.open(high_file)
+    high_boxes = {
+        'anubis': ((30, 15, 490, 490), 80),
+        'pharaoh': ((510, 30, 970, 490), 85),
+        'cleopatra': ((30, 510, 490, 970), 85),
+        'prince': ((510, 510, 970, 970), 85)
+    }
+    for name, (box, s_thresh) in high_boxes.items():
+        crop = high_im.crop(box)
+        w, h = crop.size
+        hsv = crop.convert('HSV')
+        seeds = get_border_seeds(w, h, lambda x, y: hsv.getpixel((x, y))[1] < s_thresh)
+        normalize_canvas(bfs_clean(crop, seeds, lambda x, y: hsv.getpixel((x, y))[1] < s_thresh)).save(os.path.join(PUB_SYM, f'{name}.png'))
+
+    # 4. Mascot Archaeologist
+    banner_file = os.path.join(SRC_DIR, 'gpt-image-2_game_promotional_banner_for_a_slot_game_titled_Lost_Relics_of_Ra_cinematic_ancie-0.jpg')
+    banner = Image.open(banner_file).convert('RGBA')
+    adv = banner.crop((640, 240, 950, 560)).resize((230, 230), Image.Resampling.LANCZOS)
+    mask = Image.new('L', (230, 230), 0)
+    ImageDraw.Draw(mask).ellipse((10, 10, 220, 220), fill=255)
+    framed = Image.new('RGBA', (256, 256), (0, 0, 0, 0))
+    framed.paste(adv, (13, 13), mask)
+    draw = ImageDraw.Draw(framed)
+    draw.ellipse((10, 10, 245, 245), outline=(218, 165, 32, 255), width=8)
+    draw.ellipse((14, 14, 241, 241), outline=(255, 223, 100, 255), width=3)
+    draw.ellipse((20, 20, 235, 235), outline=(139, 90, 0, 255), width=3)
+    framed.save(os.path.join(PUB_SYM, 'archaeologist.png'))
+
+    # 5. Scatter & Wild (Tight cut)
+    sp_file = os.path.join(SRC_DIR, 'gpt-image-2_set_of_2_special_slot_symbols_Scatter_symbol_as_a_glowing_ancient_magic_book_wit-0.jpg')
+    sp_im = Image.open(sp_file)
+
+    # Scatter
+    scatter_crop = sp_im.crop((15, 110, 475, 840))
     w, h = scatter_crop.size
-    def scatter_bg(x, y):
-        H, S, V = scatter_hsv.getpixel((x, y))
-        return (V > 230 and S < 75) or (S < 50)
-    seeds = get_border_seeds(w, h, scatter_bg)
+    hsv = scatter_crop.convert('HSV')
+    def sc_bg(x, y):
+        H, S, V = hsv.getpixel((x, y))
+        return (V > 225 and S < 155) or (S < 70)
+    seeds = get_border_seeds(w, h, sc_bg)
     seeds.append((175, 530))
-    scatter_res = normalize_canvas(bfs_clean(scatter_crop, seeds, scatter_bg))
-    scatter_res.save(os.path.join(SYMBOLS_DIR, 'scatter.png'))
+    normalize_canvas(bfs_clean(scatter_crop, seeds, sc_bg)).save(os.path.join(PUB_SYM, 'scatter.png'))
 
-    # 6. Wild Sun (clean flames aura)
-    wild_crop = sp.crop((510, 110, 990, 840))
-    wild_hsv = wild_crop.convert('HSV')
+    # Wild
+    wild_crop = sp_im.crop((510, 110, 990, 840))
     w, h = wild_crop.size
-    def wild_bg(x, y):
-        H, S, V = wild_hsv.getpixel((x, y))
-        return (V > 230 and S < 75) or (S < 50)
-    seeds = get_border_seeds(w, h, wild_bg)
-    wild_res = normalize_canvas(bfs_clean(wild_crop, seeds, wild_bg))
-    wild_res.save(os.path.join(SYMBOLS_DIR, 'wild.png'))
+    hsv = wild_crop.convert('HSV')
+    def wd_bg(x, y):
+        H, S, V = hsv.getpixel((x, y))
+        return (S < 75) or (V > 220 and S < 135)
+    seeds = get_border_seeds(w, h, wd_bg)
+    normalize_canvas(bfs_clean(wild_crop, seeds, wd_bg)).save(os.path.join(PUB_SYM, 'wild.png'))
 
-    print('Mid-pay and special symbols re-processed perfectly!')
+    # 6. UI Assets
+    # Frame (Tight cut - no white outer border, transparent 5 reel windows)
+    frame_file = os.path.join(SRC_DIR, 'frames-0.jpg')
+    frame = Image.open(frame_file).convert('RGBA')
+    w, h = frame.size
+    pixels = frame.load()
+    def frame_bg(x, y):
+        r, g, b, a = pixels[x, y]
+        bright = (r + g + b) / 3
+        return (bright > 205) or (min(r, g, b) > 185)
+    visited = set()
+    queue = []
+    for x in range(w):
+        for y in (0, h - 1):
+            if frame_bg(x, y): queue.append((x, y)); visited.add((x, y))
+    for y in range(h):
+        for x in (0, w - 1):
+            if (x, y) not in visited and frame_bg(x, y): queue.append((x, y)); visited.add((x, y))
+    head = 0
+    while head < len(queue):
+        cx, cy = queue[head]; head += 1
+        pixels[cx, cy] = (0, 0, 0, 0)
+        for nx, ny in ((cx+1, cy), (cx-1, cy), (cx, cy+1), (cx, cy-1)):
+            if 0 <= nx < w and 0 <= ny < h and (nx, ny) not in visited and frame_bg(nx, ny):
+                visited.add((nx, ny)); queue.append((nx, ny))
+    columns = [(145, 284), (295, 434), (445, 584), (595, 734), (745, 884)]
+    for x1, x2 in columns:
+        for y in range(305, 712):
+            for x in range(x1, x2):
+                pixels[x, y] = (0, 0, 0, 0)
+    frame.save(os.path.join(PUB_UI, 'frame.png'))
+
+    # Big Win (Clean background, preserve sunburst, clean coins)
+    bw_file = os.path.join(SRC_DIR, 'gpt-image-2_slot_game_big_win_popup_frame_ancient_egyptian_golden_banner_ornamental_borders_-0.jpg')
+    bw = Image.open(bw_file).convert('RGBA')
+    hsv_bw = bw.convert('HSV')
+    w, h = bw.size
+    pixels_bw = bw.load()
+    def bw_bg(x, y):
+        H, S, V = hsv_bw.getpixel((x, y))
+        if S < 25 and V > 230: return True
+        if S < 60 and V > 170 and not (H >= 25 and H <= 50 and V >= 240 and S >= 25): return True
+        return False
+    visited = set()
+    queue = []
+    for x in range(w):
+        for y in (0, h - 1):
+            if bw_bg(x, y): queue.append((x, y)); visited.add((x, y))
+    for y in range(h):
+        for x in (0, w - 1):
+            if (x, y) not in visited and bw_bg(x, y): queue.append((x, y)); visited.add((x, y))
+    head = 0
+    while head < len(queue):
+        cx, cy = queue[head]; head += 1
+        pixels_bw[cx, cy] = (0, 0, 0, 0)
+        for nx, ny in ((cx+1, cy), (cx-1, cy), (cx, cy+1), (cx, cy-1)):
+            if 0 <= nx < w and 0 <= ny < h and (nx, ny) not in visited and bw_bg(nx, ny):
+                visited.add((nx, ny)); queue.append((nx, ny))
+    bw.save(os.path.join(PUB_UI, 'big_win.png'))
+
+    # Background, Banner, Icon, Scroll
+    Image.open(os.path.join(SRC_DIR, 'lucid-origin_inside_ancient_egyptian_pyramid_tomb_background_for_slot_game_stone_pillars_with-0.jpg')).save(os.path.join(PUB_UI, 'background.jpg'), 'JPEG', quality=95)
+    Image.open(os.path.join(SRC_DIR, 'gpt-image-2_game_promotional_banner_for_a_slot_game_titled_Lost_Relics_of_Ra_cinematic_ancie-0.jpg')).save(os.path.join(PUB_UI, 'banner.jpg'), 'JPEG', quality=95)
+    Image.open(os.path.join(SRC_DIR, 'lucid-origin_game_app_icon_design_glowing_golden_egyptian_scarab_beetle_with_lapis_lazuli_gem-0.jpg')).save(os.path.join(PUB_UI, 'icon.png'), 'PNG')
+    
+    scroll_file = os.path.join(SRC_DIR, 'gpt-image-2_ancient_papyrus_scroll_frame_for_game_paytable_UI_egyptian_golden_borders_dark_p-0.jpg')
+    scroll_im = Image.open(scroll_file).convert('RGBA')
+    hsv_sc = scroll_im.convert('HSV')
+    seeds = get_border_seeds(scroll_im.width, scroll_im.height, lambda x, y: hsv_sc.getpixel((x, y))[1] < 40 and hsv_sc.getpixel((x, y))[2] > 200)
+    bfs_clean(scroll_im, seeds, lambda x, y: hsv_sc.getpixel((x, y))[1] < 40 and hsv_sc.getpixel((x, y))[2] > 200).save(os.path.join(PUB_UI, 'paytable_scroll.png'))
+
+    # Sync all files to client/src/assets/
+    os.system('cp -r /Applications/XAMPP/xamppfiles/htdocs/Solana-Slot-Game/client/public/assets/* /Applications/XAMPP/xamppfiles/htdocs/Solana-Slot-Game/client/src/assets/')
+    print('All assets processed and synced perfectly!')
 
 if __name__ == '__main__':
-    process_mid_and_special()
-    # Also sync to client/src/assets/symbols
-    os.system('cp /Applications/XAMPP/xamppfiles/htdocs/Solana-Slot-Game/client/public/assets/symbols/* /Applications/XAMPP/xamppfiles/htdocs/Solana-Slot-Game/client/src/assets/symbols/')
+    process_all()
