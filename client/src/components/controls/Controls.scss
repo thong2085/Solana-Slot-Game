@@ -11,79 +11,55 @@
 
   /* Top Meters Bar with Royal Gold Corners & Hieroglyphic Trim */
   .dashboard-meters {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr 1.05fr 1fr;
     align-items: center;
+    justify-items: center;
     position: relative;
-    background: linear-gradient(180deg, rgba(32, 18, 8, 0.96) 0%, rgba(16, 8, 3, 0.98) 100%);
-    border: 2px solid rgba(218, 165, 32, 0.7);
-    border-radius: 12px;
-    padding: 8px 22px;
-    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.88), inset 0 1px 3px rgba(255, 215, 0, 0.35);
+    background: url('/assets/ui/panel_dashboard_clean.png') center center / 100% 100% no-repeat;
+    border: none;
+    border-radius: 14px;
+    padding: 6px 11% 4px 11%;
+    height: 105px;
+    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.95);
 
     .gold-filigree-corner {
-      position: absolute;
-      width: 14px;
-      height: 14px;
-      pointer-events: none;
-      border: 2px solid #ffd700;
-      box-shadow: 0 0 6px rgba(255, 215, 0, 0.6);
-
-      &.top-left {
-        top: 3px;
-        left: 3px;
-        border-right: none;
-        border-bottom: none;
-        border-top-left-radius: 6px;
-      }
-      &.top-right {
-        top: 3px;
-        right: 3px;
-        border-left: none;
-        border-bottom: none;
-        border-top-right-radius: 6px;
-      }
-      &.bottom-left {
-        bottom: 3px;
-        left: 3px;
-        border-right: none;
-        border-top: none;
-        border-bottom-left-radius: 6px;
-      }
-      &.bottom-right {
-        bottom: 3px;
-        right: 3px;
-        border-left: none;
-        border-top: none;
-        border-bottom-right-radius: 6px;
-      }
+      display: none;
     }
 
     .meter-box {
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       gap: 3px;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      padding: 0;
+      min-width: 140px;
 
       .meter-label {
         font-size: 11px;
-        font-weight: 700;
-        color: #d4af37;
-        letter-spacing: 1px;
-        text-shadow: 0 1px 2px #000;
+        font-weight: 800;
+        color: #e5c158;
+        letter-spacing: 1.2px;
+        text-shadow: 0 1px 3px #000;
       }
 
       .meter-value {
         font-family: 'Cinzel', 'Trajan Pro', serif, 'Arial';
-        font-size: 20px;
+        font-size: 22px;
         font-weight: 900;
         color: #fff;
         text-shadow: 0 0 10px rgba(255, 215, 0, 0.6), 0 2px 4px #000;
+        letter-spacing: 1px;
       }
 
       &.win-meter {
         .meter-value {
           color: #76ff03;
+          text-shadow: 0 0 12px rgba(118, 255, 3, 0.65), 0 2px 4px #000;
         }
 
         &.has-win {
@@ -94,38 +70,50 @@
       .bet-adjust-controls {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
+
+        .meter-value.bet-val {
+          min-width: 36px;
+          text-align: center;
+        }
 
         .bet-btn-step {
-          width: 28px;
-          height: 28px;
+          width: 34px;
+          height: 34px;
           border-radius: 6px;
-          background: linear-gradient(180deg, #d4af37 0%, #8b6508 100%);
-          border: 1px solid #ffe082;
-          color: #000;
-          font-size: 18px;
-          font-weight: 900;
+          background: none;
+          border: none;
+          padding: 0;
           cursor: pointer;
           display: flex;
           justify-content: center;
           align-items: center;
           transition: all 0.15s ease;
 
+          .step-btn-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 5px;
+            filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.8));
+          }
+
           &:hover:not(:disabled) {
-            transform: scale(1.1);
-            filter: brightness(1.2);
-            box-shadow: 0 0 10px #ffd700;
+            transform: scale(1.12);
+            .step-btn-img {
+              filter: drop-shadow(0 0 8px #ffd700) brightness(1.2);
+            }
+          }
+
+          &:active:not(:disabled) {
+            transform: scale(0.94);
           }
 
           &:disabled {
-            opacity: 0.4;
+            opacity: 0.35;
             cursor: not-allowed;
+            filter: grayscale(0.8);
           }
-        }
-
-        .bet-val {
-          min-width: 45px;
-          text-align: center;
         }
       }
     }
@@ -167,7 +155,7 @@
     .action-group {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       flex: 1;
 
       &.left-group {
@@ -180,74 +168,113 @@
     }
 
     .action-btn {
-      height: 48px;
-      padding: 0 16px;
-      border-radius: 10px;
-      background: linear-gradient(180deg, #3d2314 0%, #1a0f08 100%);
-      border: 1.5px solid #d4af37;
-      color: #ffd700;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 0.5px;
+      position: relative;
+      height: 60px;
+      background: none;
+      border: none;
+      padding: 0;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 8px;
-      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+      justify-content: center;
+      transition: all 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+      .btn-art-img {
+        height: 58px;
+        width: auto;
+        max-width: 128px;
+        object-fit: contain;
+        border-radius: 8px;
+        filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.85));
+        transition: all 0.22s ease;
+      }
 
       &:hover:not(:disabled) {
-        transform: translateY(-2px);
-        filter: brightness(1.25);
-        box-shadow: 0 6px 15px rgba(218, 165, 32, 0.4);
+        transform: translateY(-3px) scale(1.06);
+        .btn-art-img {
+          filter: drop-shadow(0 6px 18px rgba(255, 215, 0, 0.8)) brightness(1.2);
+        }
       }
 
       &:active:not(:disabled) {
-        transform: translateY(1px);
+        transform: translateY(1px) scale(0.96);
       }
 
       &:disabled {
-        opacity: 0.4;
+        opacity: 0.38;
+        filter: grayscale(0.8);
         cursor: not-allowed;
       }
 
-      .btn-icon-papyrus {
-        width: 22px;
-        height: 22px;
-        object-fit: contain;
-      }
-
       &.sound-btn {
-        width: 48px;
-        padding: 0;
-        justify-content: center;
-        font-size: 18px;
+        .btn-art-img {
+          max-width: 58px;
+        }
 
         &.muted {
-          filter: grayscale(0.8);
-          opacity: 0.6;
+          filter: grayscale(0.9) opacity(0.55);
+        }
+
+        .sound-muted-cross {
+          position: absolute;
+          font-size: 32px;
+          font-weight: 900;
+          color: #ff1744;
+          text-shadow: 0 0 6px #000, 0 0 12px #ff1744;
+          pointer-events: none;
+          line-height: 1;
         }
       }
 
       &.autospin-btn {
         &.active {
-          background: linear-gradient(180deg, #b71c1c 0%, #5f0909 100%);
-          border-color: #ff5252;
+          .btn-art-img {
+            filter: drop-shadow(0 0 18px #00e5ff) drop-shadow(0 0 32px #00b0ff) brightness(1.25);
+            animation: pulseAutoGlow 1s infinite alternate;
+          }
+        }
+
+        .autospin-active-badge {
+          position: absolute;
+          bottom: -4px;
+          background: #d50000;
           color: #fff;
-          animation: pulseAuto 1s infinite alternate;
+          font-size: 9px;
+          font-weight: 900;
+          padding: 1px 7px;
+          border-radius: 4px;
+          border: 1px solid #ff8a80;
+          letter-spacing: 0.6px;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
         }
       }
 
       &.wallet-btn {
-        background: linear-gradient(180deg, #144955 0%, #092329 100%);
-        border-color: #00e5ff;
-        color: #00e5ff;
-
-        &.connected {
-          background: linear-gradient(180deg, #1b5e20 0%, #0d3810 100%);
-          border-color: #00e676;
-          color: #00e676;
+        .btn-art-img {
+          max-width: 138px;
         }
+
+        .wallet-connected-pill {
+          position: absolute;
+          bottom: 2px;
+          background: rgba(0, 230, 118, 0.95);
+          color: #003300;
+          font-size: 9px;
+          font-weight: 900;
+          padding: 1px 7px;
+          border-radius: 4px;
+          letter-spacing: 0.5px;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+        }
+      }
+    }
+
+    @keyframes pulseAutoGlow {
+      0% {
+        filter: drop-shadow(0 0 12px #00e5ff) brightness(1.15);
+      }
+      100% {
+        filter: drop-shadow(0 0 24px #00b0ff) drop-shadow(0 0 35px #00e5ff) brightness(1.35);
       }
     }
 

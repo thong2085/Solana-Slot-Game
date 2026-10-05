@@ -63,22 +63,24 @@ export const Controls: React.FC<ControlsProps> = ({
 
         {/* Total Bet Meter */}
         <div className="meter-box bet-meter">
-          <span className="meter-label">TỔNG CƯỢC (20 LINES)</span>
+          <span className="meter-label">TỔNG CƯỢC</span>
           <div className="bet-adjust-controls">
             <button
-              className="bet-btn-step"
+              className="bet-btn-step btn-step-minus"
               onClick={() => onAdjustBet(-2)}
               disabled={isSpinning || isFreeSpins || betAmount <= 2}
+              title="Giảm cược"
             >
-              -
+              <img src="/assets/ui/btn_minus.png" alt="Minus" className="step-btn-img" />
             </button>
             <span className="meter-value bet-val">{betAmount.toFixed(0)}</span>
             <button
-              className="bet-btn-step"
+              className="bet-btn-step btn-step-plus"
               onClick={() => onAdjustBet(2)}
               disabled={isSpinning || isFreeSpins || betAmount >= 100}
+              title="Tăng cược"
             >
-              +
+              <img src="/assets/ui/btn_plus.png" alt="Plus" className="step-btn-img" />
             </button>
           </div>
         </div>
@@ -98,30 +100,31 @@ export const Controls: React.FC<ControlsProps> = ({
         <div className="action-group left-group">
           {/* Paytable Button */}
           <button
-            className="action-btn paytable-btn"
+            className="action-btn paytable-btn custom-img-btn"
             onClick={onOpenPaytable}
             title="Bảng Trả Thưởng"
           >
-            <img src="/assets/ui/paytable_scroll.png" alt="Paytable" className="btn-icon-papyrus" />
-            <span className="btn-text">PAYTABLE</span>
+            <img src="/assets/ui/btn_paytable.png" alt="PAYTABLE" className="btn-art-img" />
           </button>
 
           {/* Sound Toggle Button */}
           <button
-            className={`action-btn sound-btn ${isMuted ? 'muted' : ''}`}
+            className={`action-btn sound-btn custom-img-btn ${isMuted ? 'muted' : ''}`}
             onClick={onToggleMute}
             title={isMuted ? 'Bật âm thanh' : 'Tắt âm thanh'}
           >
-            <span className="sound-emoji">{isMuted ? '🔇' : '🔊'}</span>
+            <img src="/assets/ui/btn_sound.png" alt="Sound" className="btn-art-img" />
+            {isMuted && <span className="sound-muted-cross">✕</span>}
           </button>
 
           {/* Max Bet Button */}
           <button
-            className="action-btn max-bet-btn"
+            className="action-btn max-bet-btn custom-img-btn"
             onClick={onMaxBet}
             disabled={isSpinning || isFreeSpins || betAmount >= 100}
+            title="Cược Tối Đa"
           >
-            MAX BET
+            <img src="/assets/ui/btn_maxbet.png" alt="MAX BET" className="btn-art-img" />
           </button>
         </div>
 
@@ -159,25 +162,27 @@ export const Controls: React.FC<ControlsProps> = ({
         <div className="action-group right-group">
           {/* Auto Spin Toggle */}
           <button
-            className={`action-btn autospin-btn ${isAutoSpin ? 'active' : ''}`}
+            className={`action-btn autospin-btn custom-img-btn ${isAutoSpin ? 'active' : ''}`}
             onClick={onToggleAutoSpin}
             disabled={isFreeSpins}
+            title={isAutoSpin ? 'Dừng Tự Động Quay' : 'Tự Động Quay'}
           >
-            <span className="auto-icon">🔄</span>
-            <span className="btn-text">{isAutoSpin ? 'DỪNG' : 'AUTO'}</span>
+            <img src="/assets/ui/btn_autospin.png" alt="AUTO SPIN" className="btn-art-img" />
+            {isAutoSpin && <span className="autospin-active-badge">ACTIVE</span>}
           </button>
 
           {/* Wallet Connect Button */}
           <button
-            className={`action-btn wallet-btn ${walletAddress ? 'connected' : ''}`}
+            className={`action-btn wallet-btn custom-img-btn ${walletAddress ? 'connected' : ''}`}
             onClick={onConnectWallet}
+            title={walletAddress ? `Ví: ${walletAddress}` : 'Kết nối ví Solana'}
           >
-            <span className="wallet-icon">💎</span>
-            <span className="btn-text">
-              {walletAddress
-                ? `${walletAddress.slice(0, 4)}...${walletAddress.slice(-4)}`
-                : 'VÍ SOLANA'}
-            </span>
+            <img src="/assets/ui/btn_wallet.png" alt="WEB3 WALLET" className="btn-art-img" />
+            {walletAddress && (
+              <span className="wallet-connected-pill">
+                {`${walletAddress.slice(0, 4)}..${walletAddress.slice(-3)}`}
+              </span>
+            )}
           </button>
         </div>
       </div>
