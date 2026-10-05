@@ -245,6 +245,75 @@ def process_all():
     seeds = get_border_seeds(scroll_im.width, scroll_im.height, lambda x, y: hsv_sc.getpixel((x, y))[1] < 40 and hsv_sc.getpixel((x, y))[2] > 200)
     bfs_clean(scroll_im, seeds, lambda x, y: hsv_sc.getpixel((x, y))[1] < 40 and hsv_sc.getpixel((x, y))[2] > 200).save(os.path.join(PUB_UI, 'paytable_scroll.png'))
 
+    # 7. VFX - Light Beam (Tight & Smooth Holy Light Pillar)
+    beam_file = os.path.join(SRC_DIR, 'lucid-origin_vertical_beam_of_golden_sunlight_holy_light_pillar_with_floating_golden_dust_par-0.jpg')
+    if os.path.exists(beam_file):
+        from PIL import ImageFilter
+        orig_beam = Image.open(beam_file)
+        bw, bh = orig_beam.size
+        orig_pixels = orig_beam.load()
+        med = orig_beam.filter(ImageFilter.MedianFilter(size=21))
+        med_pixels = med.load()
+        alpha_raw = Image.new('L', (bw, bh), 0)
+        ar_pixels = alpha_raw.load()
+
+        for y in range(bh):
+            for x in range(bw):
+                r, g, b = orig_pixels[x, y]
+                mr, mg, mb = med_pixels[x, y]
+                m_bright = (mr + mg + mb) / 3.0
+                m_gold = mr - mb
+                dist_c = abs(x - 512)
+                if (m_bright > 225 and dist_c < 75) or (dist_c < 45 and m_bright > 190):
+                    ar_pixels[x, y] = 255
+                elif y > 870 and dist_c < 200 and mr > 185 and m_gold > 40:
+                    t = min(1.0, max(0.0, (m_gold - 40) / 45.0))
+                    ar_pixels[x, y] = int(255 * (t * t * (3 - 2 * t)))
+                elif (r > 215 and (r - b) > 35 and (r - mr > 8 or g - mg > 7)) or (dist_c < 120 and r > 230 and g > 210):
+                    ar_pixels[x, y] = min(255, int(r * 0.98))
+                elif m_gold > 60 and mr > 182:
+                    t = min(1.0, max(0.0, (m_gold - 60) / 45.0))
+                    a = t * t * (3 - 2 * t)
+                    if m_bright > 190: a = min(1.0, a * 1.25)
+                    if y < 860 and dist_c > 80:
+                        a *= max(0.0, 1.0 - (dist_c - 80) / 55.0)
+                    ar_pixels[x, y] = int(a * 255)
+
+        alpha_smooth = alpha_raw.filter(ImageFilter.GaussianBlur(radius=1.5))
+        as_pixels = alpha_smooth.load()
+        out_beam = Image.new('RGBA', (bw, bh), (0, 0, 0, 0))
+        out_pixels = out_beam.load()
+
+        for y in range(bh):
+            for x in range(bw):
+                a = as_pixels[x, y]
+                if a > 3:
+                    r, g, b = orig_pixels[x, y]
+                    mr, mg, mb = med_pixels[x, y]
+                    dist_c = abs(x - 512)
+                    gr = min(255, int(mr * 1.15))
+                    gg = min(255, int(mg * 1.05))
+                    gb = max(0, int(mb * 0.5))
+                    if r - mr > 8 and r > 200:
+                        out_pixels[x, y] = (min(255, int(r * 1.08)), min(255, int(g * 1.04)), max(0, int(b * 0.6)), a)
+                        continue
+                    core_w = 90 if y > 880 else 35
+                    blend_w = 40 if y > 880 else 20
+                    if dist_c <= core_w: w_orig = 1.0
+                    elif dist_c >= core_w + blend_w: w_orig = 0.0
+                    else:
+                        t = (dist_c - core_w) / float(blend_w)
+                        w_orig = 1.0 - (t * t * (3 - 2 * t))
+                    fr = int(r * w_orig + gr * (1.0 - w_orig))
+                    fg = int(g * w_orig + gg * (1.0 - w_orig))
+                    fb = int(b * w_orig + gb * (1.0 - w_orig))
+                    out_pixels[x, y] = (fr, fg, fb, a)
+
+        vfx_dir = '/Applications/XAMPP/xamppfiles/htdocs/Solana-Slot-Game/client/public/assets/vfx'
+        os.makedirs(vfx_dir, exist_ok=True)
+        crop_beam = out_beam.crop(out_beam.getbbox())
+        crop_beam.save(os.path.join(vfx_dir, 'light_beam.png'))
+
     # Sync all files to client/src/assets/
     os.system('cp -r /Applications/XAMPP/xamppfiles/htdocs/Solana-Slot-Game/client/public/assets/* /Applications/XAMPP/xamppfiles/htdocs/Solana-Slot-Game/client/src/assets/')
     print('All assets processed and synced perfectly!')
